@@ -17,6 +17,7 @@ class Collection(object):
     def __init__(self, site, data):
         self.site = site
         self.data = data
+        self.raw_data = None
         
     @staticmethod
     def init(site, ctype, title, article_id, url):
@@ -27,11 +28,13 @@ class Collection(object):
         response = self.__invoke_collection_api('create')
         if response.status_code == 200:
             self.data.id = response.json()['data']['collectionId']
+            self.raw_data = response.json()
             return self
         if response.status_code == 409:
             response = self.__invoke_collection_api('update')
             if response.status_code == 200:
                 self.data.id = response.json()['data']['collectionId']
+                self.raw_data = response.json()
                 return self
         raise ApiException(response.status_code)
 
