@@ -18,6 +18,8 @@ class Collection(object):
         self.site = site
         self.data = data
         self.raw_data = None
+        self.created = None
+        self.updated = None
         
     @staticmethod
     def init(site, ctype, title, article_id, url):
@@ -29,12 +31,16 @@ class Collection(object):
         if response.status_code == 200:
             self.data.id = response.json()['data']['collectionId']
             self.raw_data = response.json()
+            self.created = True
+            self.updated = False
             return self
         if response.status_code == 409:
             response = self.__invoke_collection_api('update')
             if response.status_code == 200:
                 self.data.id = response.json()['data']['collectionId']
                 self.raw_data = response.json()
+                self.created = False
+                self.updated = True
                 return self
         raise ApiException(response.status_code)
 
